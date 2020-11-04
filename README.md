@@ -24,6 +24,7 @@ node_modules/db-migrate/bin/db-migrate up
 
 # Run
 
+Rename `config.tml.example` to `config.tml` and fill in the password.
 Run following command to start harvesting the Adlib database(s):
 
 ```
