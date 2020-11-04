@@ -1,0 +1,11 @@
+[adlib]
+  baseUrl = 'https://cjm-web.adlibhosting.com/coghentapi/wwwopac.ashx'
+  username = 'coghent'
+  password = 'xxx'
+  limit = 10
+
+[eventstream]
+  hostname = 'localhost'
+  port = 3000
+  database = 'eventstream.db'
+  numberOfObjectsPerFragment = 5

@@ -1,0 +1,6 @@
+config.tml
+node_modules/
+package-lock.json
+*.db
+.idea
+.babelrc
