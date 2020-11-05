@@ -10,8 +10,15 @@ const numberOfObjectsPerFragment = 5;
 
 module.exports.getDiscoveryMetadata = async function(req, res) {
     try {
+        res.set({
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/ld+json'
+        });
+
         let md = {
-            "@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld"],
+            "@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld", {
+                "dcterms": "http://purl.org/dc/terms/"
+            }],
             "@id": 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#datasetcatalogus',
             "@type": "DatasetCatalogus",
             "DatasetCatalogus.titel": "Catalogus CoGhent",
@@ -32,7 +39,8 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
                     "Dataset.beschrijving": "Dataset van de Adlib database \"" + dataset + "\"",
                     "heeftDistributie": {
                         "@type": "Distributie",
-                        "toegangsURL": 'http://' + config.eventstream.hostname + port + '/' + path + dataset
+                        "toegangsURL": 'http://' + config.eventstream.hostname + port + '/' + path + dataset,
+                        "dcterms:conformsTo": "https://w3id.org/tree"
                     }
                 }
             }
