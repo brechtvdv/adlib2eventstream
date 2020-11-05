@@ -13,7 +13,7 @@ async function start() {
 
     // Create eventstream "objects"
     let objectAdlib = new Adlib({"adlibDatabase": "objecten"});
-    let objectMapper = new ObjectMapper();
+    let objectMapper = new ObjectMapper({"adlibDatabase": "objecten"});
     let objectSqliteBackend = new SqliteBackend({"adlibDatabase": "objecten"});
     objectAdlib.getStream().pipe(objectMapper).pipe(objectSqliteBackend);
 }
