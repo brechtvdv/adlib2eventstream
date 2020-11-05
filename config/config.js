@@ -2,7 +2,7 @@ let fs = require("fs");
 let toml = require('toml');
 
 module.exports.getConfig = function() {
-    let data = toml.parse(fs.readFileSync("../config.tml").toString());
+    let data = toml.parse(fs.readFileSync(__dirname + "/../config.tml").toString());
     return {
         adlib: {
             baseUrl: data.adlib.baseUrl,

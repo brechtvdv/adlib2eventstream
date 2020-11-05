@@ -5,7 +5,7 @@ let config = Config.getConfig();
 let port = config.eventstream.port != '' ? ':' + config.eventstream.port : '';
 let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
 
-const db = Utils.openDB("../" + config.eventstream.database);
+const db = Utils.openDB(__dirname + "/../" + config.eventstream.database);
 const numberOfObjectsPerFragment = 5;
 
 module.exports.getEventstream = async function(req, res) {
