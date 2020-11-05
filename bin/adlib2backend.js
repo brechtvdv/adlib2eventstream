@@ -1,6 +1,6 @@
-import { Adlib } from '../lib/adlib.js';
-import { ObjectMapper } from '../lib/mappers/objectMapper.js';
-import { SqliteBackend } from '../lib/sqliteBackend.js';
+let Adlib = require('../lib/adlib.js');
+let ObjectMapper = require('../lib/mappers/objectMapper.js');
+let SqliteBackend = require('../lib/sqliteBackend.js');
 
 const fs = require('fs');
 const path = require('path');
@@ -11,9 +11,10 @@ start();
 async function start() {
     let config = Config.getConfig();
 
+    let options = {"adlibDatabase": "objecten"};
     // Create eventstream "objects"
-    let objectAdlib = new Adlib({"adlibDatabase": "objecten"});
-    let objectMapper = new ObjectMapper({"adlibDatabase": "objecten"});
-    let objectSqliteBackend = new SqliteBackend({"adlibDatabase": "objecten"});
+    let objectAdlib = new Adlib(options);
+    let objectMapper = new ObjectMapper(options);
+    let objectSqliteBackend = new SqliteBackend(options);
     objectAdlib.getStream().pipe(objectMapper).pipe(objectSqliteBackend);
 }

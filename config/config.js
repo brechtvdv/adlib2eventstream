@@ -1,4 +1,4 @@
-import fs from "fs";
+let fs = require("fs");
 let toml = require('toml');
 
 module.exports.getConfig = function() {

@@ -7,7 +7,7 @@ let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
 const db = Utils.openDB("../" + config.eventstream.database);
 const numberOfObjectsPerFragment = 5;
 
-export async function getEventstream(req, res) {
+module.exports.getEventstream = async function(req, res) {
     try {
         let adlibdatabase = req.params.adlibDatabase;
         let isSupported = await isDatabaseSupported(adlibdatabase);

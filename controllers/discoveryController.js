@@ -7,7 +7,7 @@ let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
 const db = Utils.openDB("../" + config.eventstream.database);
 const numberOfObjectsPerFragment = 5;
 
-export async function getDiscoveryMetadata(req, res) {
+module.exports.getDiscoveryMetadata = async function(req, res) {
     try {
         let md = {
             "@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld"],

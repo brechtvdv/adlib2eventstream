@@ -41,7 +41,7 @@ Rename `config.tml.example` to `config.tml` and fill in the password.
 Run following command to start harvesting the Adlib database(s):
 
 ```
-node bin/adlib2backend.js -r esm
+node bin/adlib2backend.js
 ```
 
 When the SQLite database is empty, it will harvest all Adlib objects.
@@ -62,7 +62,7 @@ node_modules/db-migrate/bin/db-migrate up
 After harvesting Adlib, the Evenstream API can be deployed to serve cacheable fragments:
 
 ```
-node bin/eventstream.js -r esm
+node bin/eventstream.js
 ```
 
 **Request**
