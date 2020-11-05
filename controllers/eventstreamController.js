@@ -176,14 +176,8 @@ module.exports.getEventstream = async function(req, res) {
         }
         res.send(JSON.stringify(fragmentContent));
     } catch (e) {
-        let tablenames = await Utils.query(db, "SELECT name FROM sqlite_master \n" +
-            "WHERE type IN ('table','view') \n" +
-            "AND name NOT LIKE 'sqlite_%';");
-        let response = '';
-        for (let t in tablenames) {
-            if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  response += 'http://' + config.eventstream.hostname + port + '/' + path + tablenames[t].name.substring(17) + "\n"
-        }
-        res.status(404).send('Not data found. Discover more here: ' + response);
+        let homepage = 'http://' + config.eventstream.hostname + port + '/' + path;
+        res.status(404).send('Not data found. Discover more here: <a href="' + homepage + '">' + homepage + '</a>');
         return;
     }
 }
