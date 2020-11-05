@@ -1,12 +1,12 @@
 {
   "name": "adlib2eventstream",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
   "scripts": {
     "start": "node -r esm bin/adlib2backend.js"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.5",
     "db-migrate": "^0.11.11",
     "db-migrate-sqlite3": "^0.4.0",
     "debug": "~2.6.9",
@@ -14,6 +14,7 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "httpntlm": "^1.7.6",
+    "morgan": "^1.10.0",
     "pug": "2.0.0-beta11",
     "sqlite3": "^5.0.0",
     "toml": "^3.0.0"
