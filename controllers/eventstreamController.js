@@ -83,12 +83,17 @@ export async function getEventstream(req, res) {
 
         let relations = [];
         if (prevFr != null) {
+            let prevRemainingItems = await Utils.query(db, "select count(1) c\n" +
+                "from " + generatedAtTimeTable + "\n" +
+                "where generatedAtTime < \"" + fr.toISOString() + "\"");
+            prevRemainingItems = prevRemainingItems[0].c;
             // there is a previous relation
             relations.push({
                 "@type": "tree:LessThanRelation",
                 "tree:node": baseURI + "?generatedAtTime=" + prevFr.toISOString(),
                 "sh:path": "prov:generatedAtTime",
                 "tree:value": generatedAtTime,
+                "tree:remainingItems": prevRemainingItems,
             })
         };
         if (nextFr != null) {
@@ -98,23 +103,32 @@ export async function getEventstream(req, res) {
                 "select max(generatedAtTime) g\n" +
                 "from OrderedGeneratedAtTimes\n" +
                 "where generatedAtTime < \"" + nextFr.toISOString() + "\"");
-            lastDateTime = lastDateTime[0].g;
-            if (lastDateTime != null) lastDateTime = new Date(lastDateTime);
+            lastDateTime = new Date(lastDateTime[0].g);
+            let nextRemainingItems = await Utils.query(db, "select count(1) c\n" +
+                "from " + generatedAtTimeTable + "\n" +
+                "where generatedAtTime > \"" + lastDateTime.toISOString() + "\"");
+            nextRemainingItems = nextRemainingItems[0].c;
             relations.push({
                 "@type": "tree:GreaterThanRelation",
                 "tree:node": baseURI + "?generatedAtTime=" + nextFr.toISOString(),
                 "sh:path": "prov:generatedAtTime",
-                "tree:value": lastDateTime
+                "tree:value": lastDateTime,
+                "tree:remainingItems": nextRemainingItems
             })
         };
 
-        // read all json-ld files
+        let collectionURI = 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '#' + adlibdatabase;
         let fragmentContent = {
             "@context": {
                 "prov": "http://www.w3.org/ns/prov#",
                 "tree": "https://w3id.org/tree#",
                 "sh": "http://www.w3.org/ns/shacl#",
+                "dcterms": "http://purl.org/dc/terms/",
                 "tree:member": {
+                    "@type": "@id"
+                },
+                "memberOf": {
+                    "@reverse": "tree:member",
                     "@type": "@id"
                 },
                 "tree:node": {
@@ -123,6 +137,11 @@ export async function getEventstream(req, res) {
             },
             "@id": baseURI + '?generatedAtTime=' + generatedAtTime.toISOString(),
             "@type": "tree:Node",
+            "dcterms:isPartOf": {
+                "@id": collectionURI,
+                "@type": "tree:Collection",
+                "tree:view": baseURI
+            },
             "@included": []
         }
         if (relations.length) fragmentContent["tree:relation"] = relations;
@@ -145,6 +164,8 @@ export async function getEventstream(req, res) {
         for (let p in payloads) {
             try {
                 json = JSON.parse(payloads[p].payload);
+                // Add member relation to collection
+                json["memberOf"] = collectionURI;
                 fragmentContent["@included"].push(json);
             } catch (e) {
                 console.log("Something wrong with " + p)
