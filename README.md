@@ -47,6 +47,12 @@ node bin/adlib2backend.js
 When the SQLite database is empty, it will harvest all Adlib objects.
 When this is not empty (when you run it as a cronjob), it will look up the latest harvested object and start fetching Adlib from that point on.
 
+## Cronjob
+
+Sync every day with Adlib at 1am in the morning:
+
+0 1 * * * node path/to/adlib2eventstream/bin/adlib2eventstream.js
+
 ## Clean database
 
 If you update the mapping of the eventstream, you need to refresh the whole database.
@@ -70,14 +76,43 @@ To deploy you can use PM2:
 
 ```
 npm install pm2@latest -g
-PORT=3000 pm2 start evenstream.js --name "eventstream"
+PORT=3000 pm2 start evenstream.js --name "eventstream" --update-env
 ```
 
-**Request**
+**Discover the collections**
 
 ```
 curl -X GET \
-  http://localhost:3000/objecten?generatedAtTime=2020-11-03T09:42:28.000Z
+  https://lodi.ilabt.imec.be/coghent/
+```
+
+**Response**
+
+```
+{
+	"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld"],
+	"@id": "http://lodi.ilabt.imec.be/coghent#datasetcatalogus",
+	"@type": "DatasetCatalogus",
+	"DatasetCatalogus.titel": "Catalogus CoGhent",
+	"DatasetCatalogus.beschrijving": "Catalogus van datasets voor de Collectie van de Gentenaar.",
+	"heeftDataset": {
+		"@id": "http://lodi.ilabt.imec.be/coghent#objecten",
+		"@type": "Dataset",
+		"Dataset.titel": "Adlib objecten",
+		"Dataset.beschrijving": "Dataset van de Adlib database \"objecten\"",
+		"heeftDistributie": {
+			"@type": "Distributie",
+			"toegangsURL": "http://lodi.ilabt.imec.be/coghent/objecten"
+		}
+	}
+}
+```
+
+**Retrieve collection**
+
+```
+curl -X GET \
+  https://lodi.ilabt.imec.be/coghent/objecten
 ```
 
 **Response**
@@ -88,194 +123,45 @@ curl -X GET \
 		"prov": "http://www.w3.org/ns/prov#",
 		"tree": "https://w3id.org/tree#",
 		"sh": "http://www.w3.org/ns/shacl#",
+		"dcterms": "http://purl.org/dc/terms/",
 		"tree:member": {
+			"@type": "@id"
+		},
+		"memberOf": {
+			"@reverse": "tree:member",
 			"@type": "@id"
 		},
 		"tree:node": {
 			"@type": "@id"
 		}
 	},
-	"@id": "http://localhost:3000/objecten?generatedAtTime=2020-11-03T09:42:28.000Z",
+	"@id": "http://lodi.ilabt.imec.be/coghent/objecten?generatedAtTime=2020-11-03T09:42:32.000Z",
 	"@type": "tree:Node",
+	"dcterms:isPartOf": {
+		"@id": "http://lodi.ilabt.imec.be/coghent#objecten",
+		"@type": "tree:Collection",
+		"tree:view": "http://lodi.ilabt.imec.be/coghent/objecten"
+	},
 	"@included": [{
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
+		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://brechtvdv.github.io/demo-data/cultureel-erfgoed-event-ap.jsonld", {
 			"dcterms:isVersionOf": {
 				"@type": "@id"
 			},
 			"prov": "http://www.w3.org/ns/prov#"
 		}],
-		"@id": "https://example.org/object/id/470000055?generatedAtTime=2020-11-03T09:42:28.000Z",
+		"@id": "http://lodi.ilabt.imec.be/coghent/objecten?generatedAtTime=2020-11-03T09:42:32.000Z#470000449",
 		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000055",
-		"prov:generatedAtTime": "2020-11-03T09:42:28.000Z",
-		"MensgemaaktObject.titel": "Boerenschroom"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000149?generatedAtTime=2020-11-03T09:42:28.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000149",
-		"prov:generatedAtTime": "2020-11-03T09:42:28.000Z",
-		"MensgemaaktObject.titel": "Behendigheidsspel met arabier"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000151?generatedAtTime=2020-11-03T09:42:29.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000151",
-		"prov:generatedAtTime": "2020-11-03T09:42:29.000Z",
-		"MensgemaaktObject.titel": "Geel meubilair voor poppenhuis"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000206?generatedAtTime=2020-11-03T09:42:29.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000206",
-		"prov:generatedAtTime": "2020-11-03T09:42:29.000Z",
-		"MensgemaaktObject.titel": "Badeend"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000326?generatedAtTime=2020-11-03T09:42:30.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000326",
-		"prov:generatedAtTime": "2020-11-03T09:42:30.000Z",
-		"MensgemaaktObject.titel": "Kaartspel van klein formaat"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000407?generatedAtTime=2020-11-03T09:42:30.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000407",
-		"prov:generatedAtTime": "2020-11-03T09:42:30.000Z",
-		"MensgemaaktObject.titel": "Le saut du boulet"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000428?generatedAtTime=2020-11-03T09:42:31.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000428",
-		"prov:generatedAtTime": "2020-11-03T09:42:31.000Z",
-		"MensgemaaktObject.titel": "Grijze ezel of paard"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000437?generatedAtTime=2020-11-03T09:42:31.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000437",
-		"prov:generatedAtTime": "2020-11-03T09:42:31.000Z",
-		"MensgemaaktObject.titel": "Filiberke"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000449?generatedAtTime=2020-11-03T09:42:32.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000449",
+		"dcterms:isVersionOf": "http://example.org/objecten/id/470000449",
 		"prov:generatedAtTime": "2020-11-03T09:42:32.000Z",
-		"MensgemaaktObject.titel": "Stripfiguur Wiske"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000449?generatedAtTime=2020-11-03T09:42:32.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000449",
-		"prov:generatedAtTime": "2020-11-03T09:42:32.000Z",
-		"MensgemaaktObject.titel": "Stripfiguur Wiske"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000485?generatedAtTime=2020-11-03T09:42:32.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000485",
-		"prov:generatedAtTime": "2020-11-03T09:42:32.000Z",
-		"MensgemaaktObject.titel": "A bon Chat bon Rat"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000486?generatedAtTime=2020-11-03T09:42:33.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000486",
-		"prov:generatedAtTime": "2020-11-03T09:42:33.000Z",
-		"MensgemaaktObject.titel": "Speelgoedhuis"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000487?generatedAtTime=2020-11-03T09:42:33.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000487",
-		"prov:generatedAtTime": "2020-11-03T09:42:33.000Z",
-		"MensgemaaktObject.titel": "Speelgoedpiano Baby Grand"
-	}, {
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://data.vlaanderen.be/context/cultureel-erfgoed-event-ap.jsonld", {
-			"dcterms:isVersionOf": {
-				"@type": "@id"
-			},
-			"prov": "http://www.w3.org/ns/prov#"
-		}],
-		"@id": "https://example.org/object/id/470000583?generatedAtTime=2020-11-03T09:42:33.000Z",
-		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "https://example.org/object/id/470000583",
-		"prov:generatedAtTime": "2020-11-03T09:42:33.000Z",
-		"MensgemaaktObject.titel": "Het advertentiespel"
+		"MensgemaaktObject.titel": "Stripfiguur Wiske",
+		"memberOf": "http://lodi.ilabt.imec.be/coghent#objecten"
 	}],
 	"tree:relation": [{
 		"@type": "tree:LessThanRelation",
-		"tree:node": "http://localhost:3000/objecten?generatedAtTime=2019-05-22T00:00:29.000Z",
+		"tree:node": "http://lodi.ilabt.imec.be/coghent/objecten?generatedAtTime=2020-11-03T09:42:27.000Z",
 		"sh:path": "prov:generatedAtTime",
-		"tree:value": "2020-11-03T09:42:28.000Z"
-	}, {
-		"@type": "tree:GreaterThanRelation",
-		"tree:node": "http://localhost:3000/objecten?generatedAtTime=2020-11-03T09:42:33.000Z",
-		"sh:path": "prov:generatedAtTime",
-		"tree:value": "2020-11-03T09:42:32.000Z"
+		"tree:value": "2020-11-03T09:42:32.000Z",
+		"tree:remainingItems": 174
 	}]
 }
 ```
