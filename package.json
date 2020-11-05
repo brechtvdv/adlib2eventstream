@@ -1,6 +1,7 @@
 {
   "name": "adlib2eventstream",
   "version": "0.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "start": "node -r esm bin/adlib2backend.js"

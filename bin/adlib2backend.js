@@ -1,6 +1,6 @@
-import Adlib from '../lib/adlib.js';
-import ObjectMapper from '../lib/mappers/objectMapper.js';
-import SqliteBackend from '../lib/sqliteBackend.js';
+import { Adlib } from '../lib/adlib.js';
+import { ObjectMapper } from '../lib/mappers/objectMapper.js';
+import { SqliteBackend } from '../lib/sqliteBackend.js';
 
 const fs = require('fs');
 const path = require('path');

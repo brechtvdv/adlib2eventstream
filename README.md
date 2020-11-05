@@ -10,13 +10,17 @@ This is done in two steps:
 
 ## Install
 
-npm install 
+```
+git clone https://github.com/brechtvdv/adlib2eventstream.git
+cd adlib2eventstream
+npm install
+```
 
 ## Create SQLite database
 
-````
+```
 node_modules/db-migrate/bin/db-migrate db:create evenstream
-````
+```
 
 Make sure that a table is created for every adlib database you want to publish as an eventstream:
 ````
