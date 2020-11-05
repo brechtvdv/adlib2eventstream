@@ -120,7 +120,7 @@ module.exports.getEventstream = async function(req, res) {
             })
         };
 
-        let collectionURI = 'http://' + config.eventstream.hostname + port + '/' + path + '#' + adlibdatabase;
+        let collectionURI = 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#' + adlibdatabase;
         let fragmentContent = {
             "@context": {
                 "prov": "http://www.w3.org/ns/prov#",

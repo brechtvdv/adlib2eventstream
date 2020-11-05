@@ -12,7 +12,7 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
     try {
         let md = {
             "@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld"],
-            "@id": 'http://' + config.eventstream.hostname + port + '/' + path + '#datasetcatalogus',
+            "@id": 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#datasetcatalogus',
             "@type": "DatasetCatalogus",
             "DatasetCatalogus.titel": "Catalogus CoGhent",
             "DatasetCatalogus.beschrijving": "Catalogus van datasets voor de Collectie van de Gentenaar.",
