@@ -2,6 +2,7 @@ const Utils = require('../lib/utils.js');
 let Config = require("../config/config.js");
 let config = Config.getConfig();
 
+let port = config.eventstream.port != '' ? ':' + config.eventstream.port : '';
 let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
 
 const db = Utils.openDB("../" + config.eventstream.database);
@@ -11,7 +12,7 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
     try {
         let md = {
             "@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld"],
-            "@id": 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '#datasetcatalogus',
+            "@id": 'http://' + config.eventstream.hostname + port + '#datasetcatalogus',
             "@type": "DatasetCatalogus",
             "DatasetCatalogus.titel": "Catalogus CoGhent",
             "DatasetCatalogus.beschrijving": "Catalogus van datasets voor de Collectie van de Gentenaar.",
@@ -25,13 +26,13 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
             if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  {
                 let dataset = tablenames[t].name.substring(17);
                 md["heeftDataset"] = {
-                    "@id": 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + config.eventstream.path + '#' + dataset,
+                    "@id": 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#' + dataset,
                     "@type": "Dataset",
                     "Dataset.titel": "Adlib " + dataset,
                     "Dataset.beschrijving": "Dataset van de Adlib database \"" + dataset + "\"",
                     "heeftDistributie": {
                         "@type": "Distributie",
-                        "toegangsURL": 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + config.eventstream.path + '/' + dataset
+                        "toegangsURL": 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '/' + dataset
                     }
                 }
             }
@@ -43,7 +44,7 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
             "AND name NOT LIKE 'sqlite_%';");
         let response = '';
         for (let t in tablenames) {
-            if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  response += 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + path + tablenames[t].name.substring(17) + "\n"
+            if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  response += 'http://' + config.eventstream.hostname + port + '/' + path + tablenames[t].name.substring(17) + "\n"
         }
         res.status(404).send('Something went wrong. Discover more here: ' + response);
         return;

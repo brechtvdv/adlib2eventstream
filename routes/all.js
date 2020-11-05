@@ -1,6 +1,6 @@
 const express = require("express");
 let { getEventstream } = require("../controllers/eventstreamController");
-let {getDiscoveryMetadata} = require("../controllers/discoveryController");
+let { getDiscoveryMetadata } = require("../controllers/discoveryController");
 
 const router = express.Router();
 

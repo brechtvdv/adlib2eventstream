@@ -2,6 +2,7 @@ const Utils = require('../lib/utils.js');
 let Config = require("../config/config.js");
 let config = Config.getConfig();
 
+let port = config.eventstream.port != '' ? ':' + config.eventstream.port : '';
 let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
 
 const db = Utils.openDB("../" + config.eventstream.database);
@@ -14,7 +15,7 @@ module.exports.getEventstream = async function(req, res) {
         if (!isSupported) throw("Database not supported")
 
         let table = adlibdatabase;
-        const baseURI = 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + path + adlibdatabase;
+        const baseURI = 'http://' + config.eventstream.hostname + port + '/' + path + adlibdatabase;
 
         let generatedAtTimeQueryParameter = new Date().toISOString();
         if (req.query.generatedAtTime) generatedAtTimeQueryParameter = req.query.generatedAtTime;
@@ -119,7 +120,7 @@ module.exports.getEventstream = async function(req, res) {
             })
         };
 
-        let collectionURI = 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '#' + adlibdatabase;
+        let collectionURI = 'http://' + config.eventstream.hostname + port + '#' + adlibdatabase;
         let fragmentContent = {
             "@context": {
                 "prov": "http://www.w3.org/ns/prov#",
@@ -180,7 +181,7 @@ module.exports.getEventstream = async function(req, res) {
             "AND name NOT LIKE 'sqlite_%';");
         let response = '';
         for (let t in tablenames) {
-            if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  response += 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + path + tablenames[t].name.substring(17) + "\n"
+            if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  response += 'http://' + config.eventstream.hostname + port + '/' + path + tablenames[t].name.substring(17) + "\n"
         }
         res.status(404).send('Not data found. Discover more here: ' + response);
         return;
