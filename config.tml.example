@@ -7,5 +7,6 @@
 [eventstream]
   hostname = 'localhost'
   port = 3000
+  path = ''
   database = 'eventstream.db'
   numberOfObjectsPerFragment = 5

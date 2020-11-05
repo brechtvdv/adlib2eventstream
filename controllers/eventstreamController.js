@@ -2,6 +2,8 @@ const Utils = require('../lib/utils.js');
 let Config = require("../config/config.js");
 let config = Config.getConfig();
 
+let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
+
 const db = Utils.openDB("../" + config.eventstream.database);
 const numberOfObjectsPerFragment = 5;
 
@@ -12,7 +14,7 @@ export async function getEventstream(req, res) {
         if (!isSupported) throw("Database not supported")
 
         let table = adlibdatabase;
-        const baseURI = 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + adlibdatabase;
+        const baseURI = 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + path + adlibdatabase;
 
         let generatedAtTimeQueryParameter = new Date().toISOString();
         if (req.query.generatedAtTime) generatedAtTimeQueryParameter = req.query.generatedAtTime;
@@ -178,7 +180,7 @@ export async function getEventstream(req, res) {
             "AND name NOT LIKE 'sqlite_%';");
         let response = '';
         for (let t in tablenames) {
-            if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  response += 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + tablenames[t].name.substring(17) + "\n"
+            if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  response += 'http://' + config.eventstream.hostname + ':' + config.eventstream.port + '/' + path + tablenames[t].name.substring(17) + "\n"
         }
         res.status(404).send('Not data found. Discover more here: ' + response);
         return;

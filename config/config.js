@@ -15,6 +15,7 @@ module.exports.getConfig = function() {
         eventstream: {
             hostname: data.eventstream.hostname,
             port: data.eventstream.port,
+            path: data.eventstream.path,
             database: data.eventstream.database,
             numberOfObjectsPerFragment: data.eventstream.numberOfObjectsPerFragment
         }

@@ -10,8 +10,7 @@ This is done in two steps:
 
 ## Install
 
-npm install db-migrate
-npm install db-migrate-sqlite3
+npm install 
 
 ## Create SQLite database
 
