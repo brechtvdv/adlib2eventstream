@@ -19,7 +19,7 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
             "@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld", {
                 "dcterms": "http://purl.org/dc/terms/"
             }],
-            "@id": 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#datasetcatalogus',
+            "@id": config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#datasetcatalogus',
             "@type": "DatasetCatalogus",
             "DatasetCatalogus.titel": "Catalogus CoGhent",
             "DatasetCatalogus.beschrijving": "Catalogus van datasets voor de Collectie van de Gentenaar.",
@@ -33,13 +33,13 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
             if (tablenames[t].name.indexOf('GeneratedAtTimeTo') != -1)  {
                 let dataset = tablenames[t].name.substring(17);
                 md["heeftDataset"] = {
-                    "@id": 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#' + dataset,
+                    "@id": config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#' + dataset,
                     "@type": "Dataset",
                     "Dataset.titel": "Adlib " + dataset,
                     "Dataset.beschrijving": "Dataset van de Adlib database \"" + dataset + "\"",
                     "heeftDistributie": {
                         "@type": "Distributie",
-                        "toegangsURL": 'http://' + config.eventstream.hostname + port + '/' + path + dataset,
+                        "toegangsURL": config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + dataset,
                         "dcterms:conformsTo": "https://w3id.org/tree"
                     }
                 }
@@ -47,7 +47,7 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
         }
         res.send(JSON.stringify(md));
     } catch (e) {
-        let homepage = 'http://' + config.eventstream.hostname + port + '/' + path;
+        let homepage = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path;
         res.status(404).send('Not data found. Discover more here: <a href="' + homepage + '">' + homepage + '</a>');
         return;
     }

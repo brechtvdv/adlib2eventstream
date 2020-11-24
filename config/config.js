@@ -13,6 +13,7 @@ module.exports.getConfig = function() {
             personen: data.adlib.personen
         },
         eventstream: {
+            protocol: data.eventstream.protocol,
             hostname: data.eventstream.hostname,
             port: data.eventstream.port,
             path: data.eventstream.path,

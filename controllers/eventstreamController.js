@@ -15,7 +15,7 @@ module.exports.getEventstream = async function(req, res) {
         if (!isSupported) throw("Database not supported")
 
         let table = adlibdatabase;
-        const baseURI = 'http://' + config.eventstream.hostname + port + '/' + path + adlibdatabase;
+        const baseURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + adlibdatabase;
 
         let generatedAtTimeQueryParameter = new Date().toISOString();
         if (req.query.generatedAtTime) generatedAtTimeQueryParameter = req.query.generatedAtTime;
@@ -120,7 +120,7 @@ module.exports.getEventstream = async function(req, res) {
             })
         };
 
-        let collectionURI = 'http://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#' + adlibdatabase;
+        let collectionURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#' + adlibdatabase;
         let fragmentContent = {
             "@context": {
                 "prov": "http://www.w3.org/ns/prov#",
@@ -176,7 +176,7 @@ module.exports.getEventstream = async function(req, res) {
         }
         res.send(JSON.stringify(fragmentContent));
     } catch (e) {
-        let homepage = 'http://' + config.eventstream.hostname + port + '/' + path;
+        let homepage = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path;
         res.status(404).send('Not data found. Discover more here: <a href="' + homepage + '">' + homepage + '</a>');
         return;
     }
