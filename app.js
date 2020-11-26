@@ -12,6 +12,16 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+let setHeaders = function (req, res, next) {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/ld+json'
+  });
+  next()
+}
+
+app.use(setHeaders);
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

@@ -22,14 +22,6 @@ npm install
 node_modules/db-migrate/bin/db-migrate db:create evenstream
 ```
 
-Make sure that a table is created for every adlib database you want to publish as an eventstream:
-````
-node_modules/db-migrate/bin/db-migrate create name_of_adlib_database --sql-file
-````
-
-Adapt the generated SQL files so there is a table with the name of the Adlib database and a table `"GeneratedAtTimeTo" + name of Adlib database`.
-See also example for "objects" in the migrations folder.
-
 Initialize all the tables:
 ```
 node_modules/db-migrate/bin/db-migrate up
@@ -38,6 +30,14 @@ node_modules/db-migrate/bin/db-migrate up
 ## Run
 
 Rename `config.tml.example` to `config.tml` and fill in the password.
+Adapt the block `[institution]` with the name (or abbreviation) of the institution that will have its data published and fill in:
+* `institutionName` with the exact spelling (`institution.name` field) used in Adlib
+* `institutionURI` with a URI of the organization
+
+`[institution]` will be used as a subpath of the Web API.
+
+Adapt the option object inside `adlib2backend.js` file so that the value of `institution` matches with `[institution]` of the configuration file.
+
 Run following command to start harvesting the Adlib database(s):
 
 ```

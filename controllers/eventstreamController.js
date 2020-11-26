@@ -1,6 +1,7 @@
 const Utils = require('../lib/utils.js');
 let Config = require("../config/config.js");
 let config = Config.getConfig();
+let md5 = require('md5');
 
 let port = config.eventstream.port != '' ? ':' + config.eventstream.port : '';
 let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
@@ -11,22 +12,26 @@ const numberOfObjectsPerFragment = 5;
 module.exports.getEventstream = async function(req, res) {
     try {
         let adlibdatabase = req.params.adlibDatabase;
-        let isSupported = await isDatabaseSupported(adlibdatabase);
-        if (!isSupported) throw("Database not supported")
+        let institution = req.params.institution;
+        if (!config[institution]) {
+            throw "institution not supported";
+        }
 
-        let table = adlibdatabase;
-        const baseURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + adlibdatabase;
+        const baseURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + institution + '/' + adlibdatabase;
 
         let generatedAtTimeQueryParameter = new Date().toISOString();
         if (req.query.generatedAtTime) generatedAtTimeQueryParameter = req.query.generatedAtTime;
         const generatedAtTime = new Date(decodeURIComponent(generatedAtTimeQueryParameter));
 
-        const generatedAtTimeTable = "GeneratedAtTimeTo" + table;
+        const generatedAtTimeTable = "GeneratedAtTimeToMembers";
+        let table = "Members";
 
         const orderedGeneratedAtTimes = "WITH OrderedGeneratedAtTimes AS  \n" +
             "( \n" +
-            "select generatedAtTime, row_number() over () - 1 rownr\n" +
+            "select generatedAtTime, institution, database, row_number() over () - 1 rownr\n" +
             "from " + generatedAtTimeTable + "\n" +
+            "where institution=\"" + institution + "\"\n" +
+            " AND database=\"" + adlibdatabase + "\"\n" +
             "group by generatedAtTime \n" +
             "order by generatedAtTime\n" +
             ")\n";
@@ -34,7 +39,10 @@ module.exports.getEventstream = async function(req, res) {
         let fr = await Utils.query(db, orderedGeneratedAtTimes +
             "select max(generatedAtTime) g \n" +
             "from " + generatedAtTimeTable + "\n" +
-            "where generatedAtTime <= \"" + generatedAtTime.toISOString() + "\" and generatedAtTime IN (\n" +
+            "where generatedAtTime <= \"" + generatedAtTime.toISOString() + "\"\n" +
+            " AND institution=\"" + institution + "\"\n" +
+            " AND database=\"" + adlibdatabase + "\"\n" +
+            " AND generatedAtTime IN (\n" +
             "select generatedAtTime\n" +
             "from OrderedGeneratedAtTimes\n" +
             "where rownr % " + numberOfObjectsPerFragment + "= 0\n" +
@@ -42,9 +50,7 @@ module.exports.getEventstream = async function(req, res) {
         fr = fr[0].g;
         if (fr != null) fr = new Date(fr);
         else {
-            res.status("404");
-            res.send("Fragment problem");
-            return;
+            throw "Fragment not found";
         }
 
         if (generatedAtTime.getTime() !== fr.getTime()) {
@@ -54,15 +60,12 @@ module.exports.getEventstream = async function(req, res) {
             return;
         }
 
-        res.set({
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/ld+json'
-        });
-
         let nextFr = await Utils.query(db, orderedGeneratedAtTimes +
             "select min(generatedAtTime) g \n" +
             "from OrderedGeneratedAtTimes\n" +
-            "where rownr % " + numberOfObjectsPerFragment + "= 0 and generatedAtTime > \"" + fr.toISOString() + "\"");
+            "where rownr % " + numberOfObjectsPerFragment + "= 0 and generatedAtTime > \"" + fr.toISOString() + "\"\n" +
+            " AND institution=\"" + institution + "\"\n" +
+            " AND database=\"" + adlibdatabase + "\"\n");
         nextFr = nextFr[0].g;
         if (nextFr != null) nextFr = new Date(nextFr);
 
@@ -80,7 +83,9 @@ module.exports.getEventstream = async function(req, res) {
         let prevFr = await Utils.query(db, orderedGeneratedAtTimes +
             "select max(generatedAtTime) g\n" +
             "from OrderedGeneratedAtTimes\n" +
-            "where rownr % " + numberOfObjectsPerFragment + "= 0 and generatedAtTime < \"" + fr.toISOString() + "\"");
+            "where rownr % " + numberOfObjectsPerFragment + "= 0 and generatedAtTime < \"" + fr.toISOString() + "\"\n" +
+            " AND institution=\"" + institution + "\"\n" +
+            " AND database=\"" + adlibdatabase + "\"\n");
         prevFr = prevFr[0].g;
         if (prevFr != null) prevFr = new Date(prevFr);
 
@@ -88,12 +93,14 @@ module.exports.getEventstream = async function(req, res) {
         if (prevFr != null) {
             let prevRemainingItems = await Utils.query(db, "select count(1) c\n" +
                 "from " + generatedAtTimeTable + "\n" +
-                "where generatedAtTime < \"" + fr.toISOString() + "\"");
+                "where generatedAtTime < \"" + fr.toISOString() + "\"\n" +
+                " AND institution=\"" + institution + "\"\n" +
+                " AND database=\"" + adlibdatabase + "\"\n");
             prevRemainingItems = prevRemainingItems[0].c;
             // there is a previous relation
             relations.push({
                 "@type": "tree:LessThanRelation",
-                "tree:node": baseURI + "?generatedAtTime=" + prevFr.toISOString(),
+                "tree:node": baseURI + '?generatedAtTime=' + prevFr.toISOString(),
                 "sh:path": "prov:generatedAtTime",
                 "tree:value": generatedAtTime,
                 "tree:remainingItems": prevRemainingItems,
@@ -105,22 +112,26 @@ module.exports.getEventstream = async function(req, res) {
             let lastDateTime = await Utils.query(db, orderedGeneratedAtTimes +
                 "select max(generatedAtTime) g\n" +
                 "from OrderedGeneratedAtTimes\n" +
-                "where generatedAtTime < \"" + nextFr.toISOString() + "\"");
+                "where generatedAtTime < \"" + nextFr.toISOString() + "\"\n" +
+                " AND institution=\"" + institution + "\"\n" +
+                " AND database=\"" + adlibdatabase + "\"\n");
             lastDateTime = new Date(lastDateTime[0].g);
             let nextRemainingItems = await Utils.query(db, "select count(1) c\n" +
                 "from " + generatedAtTimeTable + "\n" +
-                "where generatedAtTime > \"" + lastDateTime.toISOString() + "\"");
+                "where generatedAtTime > \"" + lastDateTime.toISOString() + "\"\n" +
+            " AND institution=\"" + institution + "\"\n" +
+            " AND database=\"" + adlibdatabase + "\"\n");
             nextRemainingItems = nextRemainingItems[0].c;
             relations.push({
                 "@type": "tree:GreaterThanRelation",
-                "tree:node": baseURI + "?generatedAtTime=" + nextFr.toISOString(),
+                "tree:node": baseURI + '?generatedAtTime=' + nextFr.toISOString(),
                 "sh:path": "prov:generatedAtTime",
                 "tree:value": lastDateTime,
                 "tree:remainingItems": nextRemainingItems
             })
         };
 
-        let collectionURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + config.eventstream.path + '#' + adlibdatabase;
+        let collectionURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + config.eventstream.path + institution + '/id/dataset/' +  md5(institution + adlibdatabase);
         let fragmentContent = {
             "@context": {
                 "prov": "http://www.w3.org/ns/prov#",
@@ -161,6 +172,8 @@ module.exports.getEventstream = async function(req, res) {
             "\tselect URI\n" +
             "\tfrom " + generatedAtTimeTable + "\n" +
             "\twhere generatedAtTime BETWEEN '" + startGat + "' and '" + endGat + "'\n" +
+            " AND institution=\"" + institution + "\"\n" +
+            " AND database=\"" + adlibdatabase + "\"\n" +
             "\t)\n" +
             "\torder by generatedAtTime asc");
 
@@ -176,9 +189,7 @@ module.exports.getEventstream = async function(req, res) {
         }
         res.send(JSON.stringify(fragmentContent));
     } catch (e) {
-        let homepage = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path;
-        res.status(404).send('Not data found. Discover more here: <a href="' + homepage + '">' + homepage + '</a>');
-        return;
+        Utils.sendNotFound(req, res);
     }
 }
 
