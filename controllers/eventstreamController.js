@@ -131,7 +131,7 @@ module.exports.getEventstream = async function(req, res) {
             })
         };
 
-        let collectionURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + config.eventstream.path + institution + '/id/dataset/' +  md5(institution + adlibdatabase);
+        let collectionURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + institution + '/id/dataset/' +  md5(institution + adlibdatabase);
         let fragmentContent = {
             "@context": {
                 "prov": "http://www.w3.org/ns/prov#",
