@@ -71,9 +71,8 @@ module.exports.getEventstream = async function(req, res) {
 
         if (nextFr != null) {
             // Cache older fragment that won't change over time
-            // Do not make it completely immutable if the mapping is not fixed
-            // res.set({ 'Cache-Control': 'public, max-age=31536000, immutable' });
-            res.set({ 'Cache-Control': 'public, max-age=30000' });
+            res.set({ 'Cache-Control': 'public, max-age=31536000, immutable' });
+            // res.set({ 'Cache-Control': 'public, max-age=30000' });
         } else {
             // Do not cache current fragment as it will get more data
             res.set({ 'Cache-Control': 'no-cache, no-store, must-revalidate' });
@@ -101,7 +100,7 @@ module.exports.getEventstream = async function(req, res) {
             relations.push({
                 "@type": "tree:LessThanRelation",
                 "tree:node": baseURI + '?generatedAtTime=' + prevFr.toISOString(),
-                "sh:path": "prov:generatedAtTime",
+                "tree:path": "prov:generatedAtTime",
                 "tree:value": generatedAtTime,
                 "tree:remainingItems": prevRemainingItems,
             })
@@ -125,7 +124,7 @@ module.exports.getEventstream = async function(req, res) {
             relations.push({
                 "@type": "tree:GreaterThanRelation",
                 "tree:node": baseURI + '?generatedAtTime=' + nextFr.toISOString(),
-                "sh:path": "prov:generatedAtTime",
+                "tree:path": "prov:generatedAtTime",
                 "tree:value": lastDateTime,
                 "tree:remainingItems": nextRemainingItems
             })
@@ -147,14 +146,17 @@ module.exports.getEventstream = async function(req, res) {
                 },
                 "tree:node": {
                     "@type": "@id"
+                },
+                "viewOf": {
+                    "@reverse": "tree:view",
+                    "@type": "@id"
                 }
             },
             "@id": baseURI + '?generatedAtTime=' + generatedAtTime.toISOString(),
             "@type": "tree:Node",
-            "dcterms:isPartOf": {
+            "viewOf": {
                 "@id": collectionURI,
-                "@type": "tree:Collection",
-                "tree:view": baseURI
+                "@type": "tree:Collection"
             },
             "@included": []
         }
