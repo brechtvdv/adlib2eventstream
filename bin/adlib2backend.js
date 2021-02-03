@@ -1,5 +1,8 @@
 let Adlib = require('../lib/adlib.js');
 let ObjectMapper = require('../lib/mappers/objectMapper.js');
+let DmgMapper = require('../lib/mappers/dmgMapper');
+let StamMapper = require('../lib/mappers/stamMapper');
+
 let SqliteBackend = require('../lib/sqliteBackend.js');
 
 const fs = require('fs');
@@ -8,10 +11,10 @@ const path = require('path');
 start();
 
 async function start() {
-   startHva();
+   //startHva();
    startDmg();
-   startIndustriemuseum();
-   startArchiefgent();
+   //startIndustriemuseum();
+   //startArchiefgent();
    startStam();
 }
 
@@ -32,9 +35,9 @@ function startDmg() {
         "institution": "dmg", // to retrieve name and URI from config
         "adlibDatabase": "objecten"
     };
-    // Create eventstream "objects" of Huis van Alijn
+    // Create eventstream "objects" of Design Museum Ghent
     let objectAdlib = new Adlib(options);
-    let objectMapper = new ObjectMapper(options);
+    let objectMapper = new DmgMapper(options);
     let objectSqliteBackend = new SqliteBackend(options);
     objectAdlib.getStream().pipe(objectMapper).pipe(objectSqliteBackend);
 }
@@ -44,7 +47,7 @@ function startIndustriemuseum() {
         "institution": "industriemuseum", // to retrieve name and URI from config
         "adlibDatabase": "objecten"
     };
-    // Create eventstream "personen" of Huis van Alijn
+    // Create eventstream "personen" of Industriemuseum
     let objectAdlib = new Adlib(options);
     let objectMapper = new ObjectMapper(options);
     let objectSqliteBackend = new SqliteBackend(options);
@@ -56,7 +59,7 @@ function startArchiefgent() {
         "institution": "archiefgent", // to retrieve name and URI from config
         "adlibDatabase": "objecten"
     };
-    // Create eventstream "personen" of Huis van Alijn
+    // Create eventstream "personen" of Archief Gent
     let objectAdlib = new Adlib(options);
     let objectMapper = new ObjectMapper(options);
     let objectSqliteBackend = new SqliteBackend(options);
@@ -68,9 +71,9 @@ function startStam() {
         "institution": "stam", // to retrieve name and URI from config
         "adlibDatabase": "objecten"
     };
-    // Create eventstream "personen" of Huis van Alijn
+    // Create eventstream "personen" of Stam
     let objectAdlib = new Adlib(options);
-    let objectMapper = new ObjectMapper(options);
+    let objectMapper = new StamMapper(options);
     let objectSqliteBackend = new SqliteBackend(options);
     objectAdlib.getStream().pipe(objectMapper).pipe(objectSqliteBackend);
 }

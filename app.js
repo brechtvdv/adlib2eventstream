@@ -15,7 +15,9 @@ app.set('view engine', 'pug');
 let setHeaders = function (req, res, next) {
   res.set({
     'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/ld+json'
+    'Content-Type': 'application/ld+json',
+    'Allow': 'GET',
+    'Content-Language': 'nl'
   });
   next()
 }
