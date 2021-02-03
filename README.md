@@ -52,7 +52,7 @@ When this is not empty (when you run it as a cronjob), it will look up the lates
 Sync every day with Adlib at 1am in the morning:
 
 ```
-0 1 * * * cd path/to/adlib2eventstream && node bin/adlib2eventstream.js
+0 1 * * * cd path/to/adlib2eventstream && node bin/adlib2backend.js
 ```
 
 ## Clean database
