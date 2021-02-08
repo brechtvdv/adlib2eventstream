@@ -78,7 +78,7 @@ To deploy you can use PM2:
 
 ```
 npm install pm2@latest -g
-PORT=3000 pm2 start evenstream.js --name "eventstream" --update-env
+PORT=3000 pm2 start bin/eventstream.js --name "eventstream" --update-env
 ```
 
 **Discover the collections**
@@ -92,21 +92,25 @@ curl -X GET \
 
 ```
 {
-	"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld"],
-	"@id": "http://lodi.ilabt.imec.be/coghent#datasetcatalogus",
+	"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld", {
+		"dcterms": "http://purl.org/dc/terms/"
+	}],
+	"@id": "https://lodi.ilabt.imec.be/coghent/id/datasetcatalogus/coghent",
 	"@type": "DatasetCatalogus",
 	"DatasetCatalogus.titel": "Catalogus CoGhent",
 	"DatasetCatalogus.beschrijving": "Catalogus van datasets voor de Collectie van de Gentenaar.",
-	"heeftDataset": {
-		"@id": "http://lodi.ilabt.imec.be/coghent#objecten",
+	"heeftDataset": [{
+		"@id": "https://lodi.ilabt.imec.be/coghent/dmg/id/dataset/206d69c469151306d018140d6a5345e6",
 		"@type": "Dataset",
-		"Dataset.titel": "Adlib objecten",
-		"Dataset.beschrijving": "Dataset van de Adlib database \"objecten\"",
+		"Dataset.titel": "objecten van Design Museum Gent",
+		"Dataset.beschrijving": "Event stream van de Adlib database 'objecten' van de instelling Design Museum Gent",
+		"Dataset.heeftUitgever": "http://www.wikidata.org/entity/Q1809071",
 		"heeftDistributie": {
 			"@type": "Distributie",
-			"toegangsURL": "http://lodi.ilabt.imec.be/coghent/objecten"
+			"toegangsURL": "https://lodi.ilabt.imec.be/coghent/dmg/objecten",
+			"dcterms:conformsTo": "https://w3id.org/tree"
 		}
-	}
+	}]
 }
 ```
 
@@ -114,7 +118,7 @@ curl -X GET \
 
 ```
 curl -X GET \
-  https://lodi.ilabt.imec.be/coghent/objecten
+  https://lodi.ilabt.imec.be/coghent/dmg/objecten
 ```
 
 **Response**
@@ -135,35 +139,109 @@ curl -X GET \
 		},
 		"tree:node": {
 			"@type": "@id"
+		},
+		"viewOf": {
+			"@reverse": "tree:view",
+			"@type": "@id"
 		}
 	},
-	"@id": "http://lodi.ilabt.imec.be/coghent/objecten?generatedAtTime=2020-11-03T09:42:32.000Z",
+	"@id": "https://lodi.ilabt.imec.be/coghent/dmg/objecten?generatedAtTime=2021-02-03T15:48:18.091Z",
 	"@type": "tree:Node",
-	"dcterms:isPartOf": {
-		"@id": "http://lodi.ilabt.imec.be/coghent#objecten",
-		"@type": "tree:Collection",
-		"tree:view": "http://lodi.ilabt.imec.be/coghent/objecten"
+	"viewOf": {
+		"@id": "https://lodi.ilabt.imec.be/coghent/dmg/id/dataset/206d69c469151306d018140d6a5345e6",
+		"@type": "tree:Collection"
 	},
 	"@included": [{
-		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://linked.art/ns/v1/linked-art.json", "https://brechtvdv.github.io/demo-data/cultureel-erfgoed-event-ap.jsonld", {
+		"@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/cultureel-erfgoed-object/kandidaatstandaard/2020-07-17/context/cultureel-erfgoed-object-ap.jsonld", "https://data.vlaanderen.be/context/persoon-basis.jsonld", "https://brechtvdv.github.io/demo-data/cultureel-erfgoed-event-ap.jsonld", {
 			"dcterms:isVersionOf": {
 				"@type": "@id"
 			},
-			"prov": "http://www.w3.org/ns/prov#"
+			"prov": "http://www.w3.org/ns/prov#",
+			"label": "http://www.w3.org/2000/01/rdf-schema#label",
+			"opmerking": "http://www.w3.org/2004/02/skos/core#note"
 		}],
-		"@id": "http://lodi.ilabt.imec.be/coghent/objecten?generatedAtTime=2020-11-03T09:42:32.000Z#470000449",
+		"@id": "https://lodi.ilabt.imec.be/coghent/dmg/id/objecten/530026088/2021-02-03T15:48:18.091Z",
 		"@type": "MensgemaaktObject",
-		"dcterms:isVersionOf": "http://example.org/objecten/id/470000449",
-		"prov:generatedAtTime": "2020-11-03T09:42:32.000Z",
-		"MensgemaaktObject.titel": "Stripfiguur Wiske",
-		"memberOf": "http://lodi.ilabt.imec.be/coghent#objecten"
+		"dcterms:isVersionOf": "http://example.org/id/objecten/530026088",
+		"prov:generatedAtTime": "2021-02-03T15:48:18.091Z",
+		"MaterieelDing.beheerder": "http://www.wikidata.org/entity/Q1809071",
+		"MensgemaaktObject.maaktDeelUitVan": [{
+			"@type": "Collectie",
+			"Entiteit.beschrijving": "huishoudelijke apparaten (ok)"
+		}, {
+			"@type": "Collectie",
+			"Entiteit.beschrijving": "Nova"
+		}],
+		"Object.identificator": {
+			"@type": "Identificator",
+			"Identificator.identificator": ["2017-0448"]
+		},
+		"Entiteit.classificatie": [{
+			"@type": "Classificatie",
+			"Classificatie.getypeerdeEntiteit": "https://lodi.ilabt.imec.be/coghent/dmg/id/objecten/530026088/2021-02-03T15:48:18.091Z",
+			"Classificatie.toegekendType": {
+				"label": "wafelijzer"
+			}
+		}, {
+			"@type": "Classificatie",
+			"Classificatie.getypeerdeEntiteit": "https://lodi.ilabt.imec.be/coghent/dmg/id/objecten/530026088/2021-02-03T15:48:18.091Z",
+			"Classificatie.toegekendType": {
+				"label": "dummy"
+			}
+		}],
+		"MensgemaaktObject.titel": {
+			"@value": "Dummy van Croc'Seconde Plus (Classic Line)",
+			"@language": "nl"
+		},
+		"Entiteit.beschrijving": {
+			"@value": "Model voor de uitvoering van een croc-toestel. Deze dummy werd naar alle waarschijnlijkheid gemaakt door Karl D'Hulst, stagiair industriële vormgeving bij Nova in 1985. Voor zijn stage-opdracht diende hij een stylingmodel te ontwerpen waarvoor er tevens een dummy diende te worden gemaakt.",
+			"@language": "nl"
+		},
+		"MensgemaaktObject.materiaal": [{
+			"label": "geheel: polymethacrylimide (pp)"
+		}],
+		"MensgemaaktObject.dimensie": [{
+			"@type": "Dimensie",
+			"Dimensie.beschrijving": "Dimensie van geheel",
+			"Dimensie.type": "hoogte",
+			"Dimensie.waarde": "9",
+			"Dimensie.eenheid": "cm"
+		}, {
+			"@type": "Dimensie",
+			"Dimensie.beschrijving": "Dimensie van geheel",
+			"Dimensie.type": "breedte",
+			"Dimensie.waarde": "23",
+			"Dimensie.eenheid": "cm"
+		}, {
+			"@type": "Dimensie",
+			"Dimensie.beschrijving": "Dimensie van geheel",
+			"Dimensie.type": "diepte",
+			"Dimensie.waarde": "24",
+			"Dimensie.eenheid": "cm"
+		}],
+		"MaterieelDing.isOvergedragenBijVerwerving": {
+			"@type": "Verwerving",
+			"Verwerving.overdrachtVan": "https://lodi.ilabt.imec.be/coghent/dmg/id/objecten/530026088/2021-02-03T15:48:18.091Z",
+			"Verwerving.overgedragenAan": "http://www.wikidata.org/entity/Q1809071",
+			"Gebeurtenis.plaats": "",
+			"Activiteit.gebruikteTechniek": "oningeschreven gevonden",
+			"Gebeurtenis.tijd": {
+				"@type": "Periode",
+				"Periode.begin": "2017",
+				"Periode.einde": "2017"
+			}
+		},
+		"MensgemaaktObject.locatie": {
+			"opmerking": "Niet publiek"
+		},
+		"memberOf": "https://lodi.ilabt.imec.be/coghent/dmg/id/dataset/206d69c469151306d018140d6a5345e6"
 	}],
-	"tree:relation": [{
-		"@type": "tree:LessThanRelation",
-		"tree:node": "http://lodi.ilabt.imec.be/coghent/objecten?generatedAtTime=2020-11-03T09:42:27.000Z",
-		"sh:path": "prov:generatedAtTime",
-		"tree:value": "2020-11-03T09:42:32.000Z",
-		"tree:remainingItems": 174
-	}]
+    "tree:relation": [{
+        "@type": "tree:LessThanRelation",
+        "tree:node": "https://lodi.ilabt.imec.be/coghent/dmg/objecten?generatedAtTime=2021-02-03T15:48:12.309Z",
+        "tree:path": "prov:generatedAtTime",
+        "tree:value": "2021-02-03T15:48:18.091Z",
+        "tree:remainingItems": 161
+    }]
 }
 ```
