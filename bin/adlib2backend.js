@@ -12,8 +12,8 @@ const path = require('path');
 start();
 
 async function start() {
-   //startHva();
-   //startDmg();
+   startHva();
+   startDmg();
    //startIndustriemuseum();
    //startArchiefgent();
    startStam();
