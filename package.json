@@ -7,8 +7,6 @@
   },
   "dependencies": {
     "cookie-parser": "^1.4.5",
-    "db-migrate": "^0.11.11",
-    "db-migrate-sqlite3": "^0.4.0",
     "debug": "~2.6.9",
     "esm": "^3.2.25",
     "express": "~4.16.1",
