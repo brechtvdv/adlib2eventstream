@@ -12,12 +12,14 @@ module.exports.getConfig = function() {
             thesaurus: data.adlib.thesaurus,
             personen: data.adlib.personen
         },
+        database: {
+            connectionURI: data.database.connectionURI
+        },
         eventstream: {
             protocol: data.eventstream.protocol,
             hostname: data.eventstream.hostname,
             port: data.eventstream.port,
             path: data.eventstream.path,
-            database: data.eventstream.database,
             numberOfObjectsPerFragment: data.eventstream.numberOfObjectsPerFragment
         },
         hva: {

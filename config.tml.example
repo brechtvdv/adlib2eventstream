@@ -4,12 +4,14 @@
   password = 'xxx'
   limit = 10
 
+[database]
+  connectionURI = 'sqlite://./eventstream.db'
+
 [eventstream]
   protocol = 'https'
   hostname = 'localhost'
   port = 3000
   path = ''
-  database = 'eventstream.db'
   numberOfObjectsPerFragment = 5
 
 [hva]

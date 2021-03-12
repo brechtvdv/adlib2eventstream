@@ -14,10 +14,17 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "httpntlm": "^1.7.6",
+    "ladc": "^0.22.14",
+    "mariadb": "^2.5.3",
     "md5": "^2.3.0",
     "morgan": "^1.10.0",
+    "mysql2": "^2.2.5",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
     "pug": "2.0.0-beta11",
-    "sqlite3": "^5.0.0",
+    "sequelize": "^6.5.0",
+    "sqlite3": "^5.0.2",
+    "tedious": "^11.0.5",
     "toml": "^3.0.0"
   },
   "devDependencies": {

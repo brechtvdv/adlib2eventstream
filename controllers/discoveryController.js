@@ -1,16 +1,17 @@
 const Utils = require('../lib/utils.js');
-let Config = require("../config/config.js");
-let config = Config.getConfig();
+let config = require("../config/config.js").getConfig();
 let md5 = require('md5');
 
 let port = config.eventstream.port != '' ? ':' + config.eventstream.port : '';
 let path = config.eventstream.path != '' ? config.eventstream.path + '/' : '';
 
-const db = Utils.openDB(__dirname + "/../" + config.eventstream.database);
+let db = null;
 const numberOfObjectsPerFragment = 5;
 
 module.exports.getDiscoveryMetadata = async function(req, res) {
     try {
+        if(!db) db = await Utils.initDb();
+
         res.set({
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/ld+json'
@@ -26,9 +27,18 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
             "DatasetCatalogus.beschrijving": "Catalogus van datasets voor de Collectie van de Gentenaar.",
             "heeftDataset": []
         };
-        let institutions = await Utils.query(db, "SELECT distinct institution FROM Members");
+        const institutions = await db.models.Member.findAll(  {
+            attributes: ['institution'],
+            group: "institution"
+        });
         for (let i in institutions) {
-            let databases = await Utils.query(db, "SELECT distinct database FROM Members WHERE institution='" + institutions[i].institution + "'");
+            const databases = await db.models.Member.findAll({
+                attributes: ['database'],
+                where: {
+                    "institution": institutions[i].institution
+                },
+                group: "database"
+            });
             for (let d in databases) {
                 md["heeftDataset"].push({
                     "@id": config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + institutions[i].institution + '/id/dataset/' +  md5(institutions[i].institution + databases[d].database),

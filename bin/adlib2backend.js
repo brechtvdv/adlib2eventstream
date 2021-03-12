@@ -3,8 +3,11 @@ let ObjectMapper = require('../lib/mappers/objectMapper.js');
 let DmgMapper = require('../lib/mappers/dmgMapper');
 let StamMapper = require('../lib/mappers/stamMapper');
 const HvAMapper = require("../lib/mappers/hvaMapper");
+const Backend = require("../lib/Backend");
+const Utils = require('../lib/utils.js');
+const config = require("../config/config.js").getConfig();
 
-let SqliteBackend = require('../lib/sqliteBackend.js');
+var sequelize;
 
 const fs = require('fs');
 const path = require('path');
@@ -12,23 +15,25 @@ const path = require('path');
 start();
 
 async function start() {
-   startHva();
-   startDmg();
+    sequelize = await Utils.initDb();
+
+    startHva();
+   //startDmg();
    //startIndustriemuseum();
    //startArchiefgent();
-   startStam();
+   // startStam();
 }
 
-function startHva() {
+async function startHva() {
     let options = {
         "institution": "hva", // to retrieve name and URI from config
-        "adlibDatabase": "objecten"
+        "adlibDatabase": "objecten",
+        "db": sequelize
     };
-    // Create eventstream "objects" of Huis van Alijn
+    const backend = new Backend(options);
     let objectAdlib = new Adlib(options);
     let objectMapper = new HvAMapper(options);
-    let objectSqliteBackend = new SqliteBackend(options);
-    objectAdlib.getStream().pipe(objectMapper).pipe(objectSqliteBackend);
+    objectAdlib.getStream().pipe(objectMapper).pipe(backend);
 }
 
 function startDmg() {

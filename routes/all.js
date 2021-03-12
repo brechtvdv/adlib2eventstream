@@ -1,7 +1,6 @@
 const express = require("express");
 let { getEventstream } = require("../controllers/eventstreamController");
 let { getDiscoveryMetadata } = require("../controllers/discoveryController");
-let { getSubjectPageOfMember } = require("../controllers/subjectPageController");
 
 let Config = require("../config/config.js");
 let config = Config.getConfig();
@@ -19,6 +18,5 @@ router.get("/:institution/:adlibDatabase", getEventstream);
 
 router.get('/id/datasetcatalogus/:ref', (req, res) => res.redirect(baseURI));
 router.get('/:institution/id/dataset/:ref', (req, res) => res.redirect(baseURI))
-router.get('/:institution/id/:database/:refBasis/:refVersie', getSubjectPageOfMember);
 
 module.exports = router;

@@ -16,27 +16,22 @@ cd adlib2eventstream
 npm install
 ```
 
-## Create SQLite database
+## Configuration
 
-```
-node_modules/db-migrate/bin/db-migrate db:create evenstream
-```
+Rename `config.tml.example` to `config.tml` and fill in the password of the Adlib API you want to expose as an eventstream.
 
-Initialize all the tables:
-```
-node_modules/db-migrate/bin/db-migrate up
-```
+Adlib2eventstream uses an ORM (Sequelize) to support following databases: Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server.
+Fill in the connection URI in `config.tml` of the database you want to use. For example: `'sqlite://./eventstream.db'` or `'postgresql://postgres:yourPassword@127.0.0.1:5432'`
 
-## Run
-
-Rename `config.tml.example` to `config.tml` and fill in the password.
 Adapt the block `[institution]` with the name (or abbreviation) of the institution that will have its data published and fill in:
 * `institutionName` with the exact spelling (`institution.name` field) used in Adlib
 * `institutionURI` with a URI of the organization
 
 `[institution]` will be used as a subpath of the Web API.
 
-Adapt the option object inside `adlib2backend.js` file so that the value of `institution` matches with `[institution]` of the configuration file.
+Create a new `start` function inside `adlib2backend.js` for your dataset and adapt the option object so that the value of `institution` matches with `[institution]` of the configuration file.
+
+## Run
 
 Run following command to start harvesting the Adlib database(s):
 
@@ -44,8 +39,9 @@ Run following command to start harvesting the Adlib database(s):
 node bin/adlib2backend.js
 ```
 
-When the SQLite database is empty, it will harvest all Adlib objects.
-When this is not empty (when you run it as a cronjob), it will look up the latest harvested object and start fetching Adlib from that point on.
+When no `Members` table exists in the database, it will create a new table.
+When the table is empty, it will harvest all Adlib objects.
+When the table is not empty (e.g. when you run it as a cronjob), it will look up when the last object was harvested and start fetching Adlib from that point on.
 
 ## Cronjob
 
@@ -55,15 +51,10 @@ Sync every day with Adlib at 1am in the morning:
 0 1 * * * cd path/to/adlib2eventstream && node bin/adlib2backend.js
 ```
 
-## Clean database
+## Clean table
 
-If you update the mapping of the eventstream, you need to refresh the whole database.
-Run the db-migrate down command to clean the database:
-
-```
-node_modules/db-migrate/bin/db-migrate down
-node_modules/db-migrate/bin/db-migrate up
-```
+If you update the mapping of the event stream, you need to clean the Members table of the database manually.
+This can be configured in the future if preferred.
 
 ## Eventstream API
 
