@@ -1,0 +1,22 @@
+version: '3.2'
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+  adlib2backend:
+    build:
+      context: .
+      dockerfile: Dockerfile-adlib2backend
+    tty: true
+    links:
+      - postgres
+  eventstream:
+    build:
+      context: .
+      dockerfile: Dockerfile-eventstream
+    tty: true
+    links:
+      - postgres
+    ports:
+      - '3000:3000'
