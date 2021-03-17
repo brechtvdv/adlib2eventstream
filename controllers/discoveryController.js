@@ -12,6 +12,8 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
     try {
         if(!db) db = await Utils.initDb();
 
+        let baseURI = config.mapping.baseURI.endsWith('/') ? config.mapping.baseURI : config.mapping.baseURI + '/';
+
         res.set({
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/ld+json'
@@ -21,7 +23,7 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
             "@context": ["https://data.vlaanderen.be/doc/applicatieprofiel/DCAT-AP-VL/standaard/2019-06-13/context/DCAT-AP-VL.jsonld", {
                 "dcterms": "http://purl.org/dc/terms/"
             }],
-            "@id": config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + 'id/datasetcatalogus/coghent',
+            "@id": baseURI + 'dcat/coghent',
             "@type": "DatasetCatalogus",
             "DatasetCatalogus.titel": "Catalogus CoGhent",
             "DatasetCatalogus.beschrijving": "Catalogus van datasets voor de Collectie van de Gentenaar.",
@@ -41,7 +43,7 @@ module.exports.getDiscoveryMetadata = async function(req, res) {
             });
             for (let d in databases) {
                 md["heeftDataset"].push({
-                    "@id": config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + institutions[i].institution + '/id/dataset/' +  md5(institutions[i].institution + databases[d].database),
+                    "@id": baseURI + 'dataset/' + institutions[i].institution + '/' +  md5(institutions[i].institution + databases[d].database),
                     "@type": "Dataset",
                     "Dataset.titel": databases[d].database + " van " + config[institutions[i].institution].institutionName,
                     "Dataset.beschrijving": "Event stream van de Adlib database '" + databases[d].database + "' van de instelling " + config[institutions[i].institution].institutionName,

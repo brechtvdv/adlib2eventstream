@@ -1,4 +1,5 @@
 [adlib]
+  schedule = '* * 0 * * *'
   baseUrl = 'https://cjm-web.adlibhosting.com/coghentapi/wwwopac.ashx'
   username = 'coghent'
   password = 'xxx'
@@ -13,6 +14,9 @@
   port = 3000
   path = ''
   numberOfObjectsPerFragment = 5
+
+[mapping]
+  baseURI = 'https://stad.gent/id/'
 
 [hva]
   institutionName = 'Het Huis van Alijn (Gent)'

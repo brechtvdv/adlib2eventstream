@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node -r esm bin/adlib2backend.js"
+    "start": "node bin/adlib2backend.js",
+    "eventstream": "node bin/eventstream.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.5",
@@ -17,6 +18,7 @@
     "md5": "^2.3.0",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
+    "node-cron": "^3.0.0",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
     "pug": "2.0.0-beta11",

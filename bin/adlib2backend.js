@@ -7,12 +7,18 @@ const Backend = require("../lib/Backend");
 const Utils = require('../lib/utils.js');
 const config = require("../config/config.js").getConfig();
 
-var sequelize;
+let sequelize;
+
+let cron = require('node-cron');
 
 const fs = require('fs');
 const path = require('path');
 
 start();
+
+cron.schedule(config.adlib.schedule, () => {
+    start();
+});
 
 async function start() {
     sequelize = await Utils.initDb();

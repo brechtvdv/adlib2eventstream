@@ -21,7 +21,7 @@ npm install
 Rename `config.tml.example` to `config.tml` and fill in the password of the Adlib API you want to expose as an eventstream.
 
 Adlib2eventstream uses an ORM (Sequelize) to support following databases: Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server.
-Fill in the connection URI in `config.tml` of the database you want to use. For example: `'sqlite://./eventstream.db'` or `'postgresql://postgres:yourPassword@127.0.0.1:5432'`
+Fill in the connection URI in `config.tml` of the database you want to use. For example: `'sqlite://./eventstream.db'` or `'postgresql://postgres:yourPassword@127.0.0.1:5432'` or `'postgresql://postgres:yourPassword@yourDockerContainer:5432'`
 
 Adapt the block `[institution]` with the name (or abbreviation) of the institution that will have its data published and fill in:
 * `institutionName` with the exact spelling (`institution.name` field) used in Adlib
@@ -33,6 +33,8 @@ Create a new `start` function inside `adlib2backend.js` for your dataset and ada
 
 ## Run
 
+### CLI
+
 Run following command to start harvesting the Adlib database(s):
 
 ```
@@ -43,17 +45,25 @@ When no `Members` table exists in the database, it will create a new table.
 When the table is empty, it will harvest all Adlib objects.
 When the table is not empty (e.g. when you run it as a cronjob), it will look up when the last object was harvested and start fetching Adlib from that point on.
 
+### Docker
+
+The adlib2backend, eventstream and database can be deployed with [Docker](https://docs.docker.com/compose/install/).
+Make sure to configure your connection URI in `config.tml` with the database you will use.
+
+```
+docker-compose build
+docker-copose up
+```
+
 ## Cronjob
 
-Sync every day with Adlib at 1am in the morning:
+You can configure in `config.tml` when to periodically run `adlib2backend.js`.
+Fill in `schedule` following the cron syntax, for example every day at midnight (`* * 0 * * *`)
 
-```
-0 1 * * * cd path/to/adlib2eventstream && node bin/adlib2backend.js
-```
 
-## Clean table
+## Clean data
 
-If you update the mapping of the event stream, you need to clean the Members table of the database manually.
+If you want to clean up your database (e.g. you updated the mapping of the event stream), then you need to clean the Members table of the database manually.
 This can be configured in the future if preferred.
 
 ## Eventstream API
@@ -65,7 +75,7 @@ PORT=3000 node bin/eventstream.js
 ```
 
 When deploying this on a server, configure `config.tml` to match the hostname, port and relative path that is exposed to the outside.
-To deploy you can use PM2:
+To deploy you can use Docker (see above) or PM2:
 
 ```
 npm install pm2@latest -g

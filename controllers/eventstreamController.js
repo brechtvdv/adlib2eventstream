@@ -21,7 +21,8 @@ module.exports.getEventstream = async function(req, res) {
             throw "institution not supported";
         }
 
-        const baseURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + institution + '/' + adlibdatabase;
+        const baseURIFragments = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + institution + '/' + adlibdatabase;
+        const baseURICollection = config.mapping.baseURI.endsWith('/') ? config.mapping.baseURI : config.mapping.baseURI + '/';
 
         let generatedAtTimeQueryParameter = new Date().toISOString();
         if (req.query.generatedAtTime) generatedAtTimeQueryParameter = req.query.generatedAtTime;
@@ -60,7 +61,7 @@ module.exports.getEventstream = async function(req, res) {
         if (generatedAtTime.getTime() !== fr.getTime()) {
             // Redirect to correct fragment URL
             res.status = 302;
-            res.redirect(baseURI + '?generatedAtTime=' + fr.toISOString());
+            res.redirect(baseURIFragments + '?generatedAtTime=' + fr.toISOString());
             return;
         }
 
@@ -125,7 +126,7 @@ module.exports.getEventstream = async function(req, res) {
             // there is a previous relation
             relations.push({
                 "@type": "tree:LessThanRelation",
-                "tree:node": baseURI + '?generatedAtTime=' + prevFr.toISOString(),
+                "tree:node": baseURIFragments + '?generatedAtTime=' + prevFr.toISOString(),
                 "tree:path": "prov:generatedAtTime",
                 "tree:value": generatedAtTime,
                 "tree:remainingItems": prevRemainingItems,
@@ -147,14 +148,14 @@ module.exports.getEventstream = async function(req, res) {
             });
             relations.push({
                 "@type": "tree:GreaterThanOrEqualRelation",
-                "tree:node": baseURI + '?generatedAtTime=' + nextFr.toISOString(),
+                "tree:node": baseURIFragments + '?generatedAtTime=' + nextFr.toISOString(),
                 "tree:path": "prov:generatedAtTime",
                 "tree:value": nextFr,
                 "tree:remainingItems": nextRemainingItems
             })
         };
 
-        let collectionURI = config.eventstream.protocol + '://' + config.eventstream.hostname + port + '/' + path + institution + '/id/dataset/' +  md5(institution + adlibdatabase);
+        let collectionURI = baseURICollection + 'dataset/' + institution + '/' + md5(institution + adlibdatabase);
         let fragmentContent = {
             "@context": {
                 "prov": "http://www.w3.org/ns/prov#",
@@ -179,7 +180,7 @@ module.exports.getEventstream = async function(req, res) {
                     "@type": "@id"
                 }
             },
-            "@id": baseURI + '?generatedAtTime=' + generatedAtTime.toISOString(),
+            "@id": baseURIFragments + '?generatedAtTime=' + generatedAtTime.toISOString(),
             "@type": "tree:Node",
             "viewOf": {
                 "@id": collectionURI,
