@@ -52,7 +52,7 @@ Make sure to configure your connection URI in `config.tml` with the database you
 
 ```
 docker-compose build
-docker-copose up
+docker-compose up
 ```
 
 ## Cronjob
