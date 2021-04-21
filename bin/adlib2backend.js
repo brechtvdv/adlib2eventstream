@@ -5,7 +5,7 @@ let StamMapper = require('../lib/mappers/stamMapper');
 const HvAMapper = require("../lib/mappers/hvaMapper");
 const ArchiefGentMapper = require("../lib/mappers/archiefGentMapper");
 const IndustriemuseumMapper = require("../lib/mappers/IndustriemuseumMapper");
-const ThesaurusMapper = require("../lib/mappers/thesaurusMapper");
+const TermenMapper = require("../lib/mappers/termenMapper");
 const Backend = require("../lib/Backend");
 const Utils = require('../lib/utils.js');
 const config = require("../config/config.js").getConfig();
@@ -121,7 +121,7 @@ function startThesaurus() {
     const backend = new Backend(options);
     const objectAdlib = new Adlib(options);
     options["adlib"] = objectAdlib;
-    const thesaurusMapper = new ThesaurusMapper(options);
+    const thesaurusMapper = new TermenMapper(options);
     objectAdlib.getStream().pipe(thesaurusMapper).pipe(backend);
 }
 
@@ -129,13 +129,13 @@ function startPersonen() {
     let options = {
         "institution": "adlib", // one thesaurus for all institutions
         "adlibDatabase": "personen",
-        "type": "entiteit",
+        "type": "agent",
         "db": sequelize,
         "checkEuropeanaFlag": false
     };
     const backend = new Backend(options);
     const objectAdlib = new Adlib(options);
     options["adlib"] = objectAdlib;
-    const thesaurusMapper = new ThesaurusMapper(options);
+    const thesaurusMapper = new TermenMapper(options);
     objectAdlib.getStream().pipe(thesaurusMapper).pipe(backend);
 }
