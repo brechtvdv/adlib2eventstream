@@ -1,5 +1,7 @@
 # adlib2eventstream
 
+DEPRECATED: see [adlib-backend](https://github.com/StadGent/node_service_adlib-backend) and [eventstream](https://github.com/StadGent/node_service_eventstream-api)
+
 adlib2eventstream exposes Adlib databases as [event streams*](https://github.com/TREEcg/specification/tree/master/examples/eventstreams).
 
 This is done in two steps:
